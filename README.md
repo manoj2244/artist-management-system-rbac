@@ -2,7 +2,7 @@
 
 This repository follows a phase-based implementation plan.
 
-Current status: Phase 1 (Database Foundation) completed.
+Current status: Phase 2 (Backend Core Setup) completed.
 
 ## Tech Constraints
 - Backend runtime: Node.js
@@ -60,4 +60,19 @@ JWT_SECRET=replace_with_long_random_secret
 JWT_EXPIRES_IN=15m
 PORT=4000
 NODE_ENV=development
+```
+
+## 7) Run Backend (Phase 2)
+
+From `backend` directory:
+
+```bash
+npm install
+npm run dev
+```
+
+Health check endpoint:
+
+```bash
+curl http://localhost:4000/api/health
 ```

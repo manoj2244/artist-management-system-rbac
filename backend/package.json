@@ -1,0 +1,14 @@
+{
+  "name": "artist-management-system-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js",
+    "check": "node --check src/server.js && node --check src/app.js"
+  },
+  "dependencies": {
+    "pg": "^8.12.0"
+  }
+}
