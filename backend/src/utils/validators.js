@@ -43,6 +43,11 @@ function isNonNegativeInteger(value) {
   return Number.isInteger(num) && num >= 0;
 }
 
+function isValidGenre(value) {
+  const allowed = ['rnb', 'country', 'classic', 'rock', 'jazz'];
+  return allowed.includes(value);
+}
+
 function isValidGender(value) {
   return value === 'm' || value === 'f' || value === 'o';
 }
@@ -59,6 +64,7 @@ module.exports = {
   isValidPhone,
   isValidYear,
   isNonNegativeInteger,
+  isValidGenre,
   isValidGender,
   isValidRole
 };

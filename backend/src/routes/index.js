@@ -4,6 +4,7 @@ const { query } = require('../db/pool');
 const { authRoutes } = require('./auth.routes');
 const { usersRoutes } = require('./users.routes');
 const { artistsRoutes } = require('./artists.routes');
+const { songsRoutes } = require('./songs.routes');
 
 const routes = [
   {
@@ -23,7 +24,8 @@ const routes = [
   },
   ...authRoutes,
   ...usersRoutes,
-  ...artistsRoutes
+  ...artistsRoutes,
+  ...songsRoutes
 ];
 
 function normalizePath(pathname) {
