@@ -2,6 +2,7 @@ const { applyMiddlewares } = require('../middleware/applyMiddlewares');
 const { sendJson } = require('../utils/response');
 const { query } = require('../db/pool');
 const { authRoutes } = require('./auth.routes');
+const { usersRoutes } = require('./users.routes');
 
 const routes = [
   {
@@ -19,7 +20,8 @@ const routes = [
       });
     }
   },
-  ...authRoutes
+  ...authRoutes,
+  ...usersRoutes
 ];
 
 function normalizePath(pathname) {
@@ -34,6 +36,30 @@ function normalizePath(pathname) {
   return pathname;
 }
 
+function matchRoute(routePath, requestPath) {
+  const routeSegments = routePath.split('/');
+  const requestSegments = requestPath.split('/');
+
+  if (routeSegments.length !== requestSegments.length) {
+    return null;
+  }
+
+  const params = {};
+
+  for (let i = 0; i < routeSegments.length; i++) {
+    const routeSegment = routeSegments[i];
+    const requestSegment = requestSegments[i];
+
+    if (routeSegment.startsWith(':')) {
+      params[routeSegment.slice(1)] = requestSegment;
+    } else if (routeSegment !== requestSegment) {
+      return null;
+    }
+  }
+
+  return params;
+}
+
 function createRouter() {
   return async function router(req, res, ctx) {
     const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
@@ -44,14 +70,29 @@ function createRouter() {
     ctx.path = path;
     ctx.query = Object.fromEntries(url.searchParams.entries());
 
-    const matchedRoute = routes.find((route) => route.method === method && route.path === path);
+    let matchedRoute = null;
+    let matchedParams = {};
+
+    for (const route of routes) {
+      if (route.method !== method) {
+        continue;
+      }
+
+      const params = matchRoute(route.path, path);
+
+      if (params !== null) {
+        matchedRoute = route;
+        matchedParams = params;
+        break;
+      }
+    }
 
     if (!matchedRoute) {
-      sendJson(res, 404, {
-        message: 'Route not found'
-      });
+      sendJson(res, 404, { message: 'Route not found' });
       return;
     }
+
+    ctx.params = matchedParams;
 
     const routeHandler = applyMiddlewares(matchedRoute.middlewares || [], matchedRoute.handler);
     await routeHandler(req, res, ctx);

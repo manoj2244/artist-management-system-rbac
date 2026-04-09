@@ -6,7 +6,8 @@ const { env } = require('../config/env');
 const {
   isNonEmptyString,
   isValidEmail,
-  isValidDate,
+  isPastDate,
+  isValidPhone,
   isValidGender
 } = require('../utils/validators');
 const authService = require('../services/auth.service');
@@ -23,8 +24,8 @@ function validateRegisterPayload(body) {
   if (!isNonEmptyString(body.password) || body.password.length < 8) {
     errors.password = 'Minimum 8 characters required';
   }
-  if (!isNonEmptyString(body.phone)) errors.phone = 'Required';
-  if (!isValidDate(body.dob)) errors.dob = 'Valid date required (YYYY-MM-DD)';
+  if (!isValidPhone(body.phone)) errors.phone = 'Valid phone number required';
+  if (!isPastDate(body.dob)) errors.dob = 'Valid past date required (YYYY-MM-DD)';
   if (!isValidGender(body.gender)) errors.gender = 'Must be m, f, or o';
   if (!isNonEmptyString(body.address)) errors.address = 'Required';
 
