@@ -5,7 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node src/server.js",
+    "dev": "node --env-file=.env src/server.js",
     "check": "node --check src/server.js && node --check src/app.js"
   },
   "dependencies": {

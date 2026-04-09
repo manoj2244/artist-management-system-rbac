@@ -1,6 +1,7 @@
 const { applyMiddlewares } = require('../middleware/applyMiddlewares');
 const { sendJson } = require('../utils/response');
 const { query } = require('../db/pool');
+const { authRoutes } = require('./auth.routes');
 
 const routes = [
   {
@@ -17,7 +18,8 @@ const routes = [
         timestamp: new Date().toISOString()
       });
     }
-  }
+  },
+  ...authRoutes
 ];
 
 function normalizePath(pathname) {
