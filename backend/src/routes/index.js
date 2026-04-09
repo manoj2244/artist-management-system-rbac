@@ -3,13 +3,14 @@ const { sendJson } = require('../utils/response');
 const { query } = require('../db/pool');
 const { authRoutes } = require('./auth.routes');
 const { usersRoutes } = require('./users.routes');
+const { artistsRoutes } = require('./artists.routes');
 
 const routes = [
   {
     method: 'GET',
     path: '/api/health',
     middlewares: [],
-    handler: async (req, res) => {
+    handler: async (_req, res) => {
       const dbResult = await query('SELECT NOW() AS db_time');
 
       sendJson(res, 200, {
@@ -21,7 +22,8 @@ const routes = [
     }
   },
   ...authRoutes,
-  ...usersRoutes
+  ...usersRoutes,
+  ...artistsRoutes
 ];
 
 function normalizePath(pathname) {

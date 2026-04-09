@@ -47,4 +47,29 @@ function parseJsonBody(req, maxBytes = 1024 * 1024) {
   });
 }
 
-module.exports = { parseJsonBody };
+function parseRawBody(req, maxBytes = 5 * 1024 * 1024) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let size = 0;
+
+    req.on('data', (chunk) => {
+      size += chunk.length;
+      if (size > maxBytes) {
+        reject(new AppError(413, 'Payload too large'));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+
+    req.on('end', () => {
+      resolve(Buffer.concat(chunks).toString('utf-8'));
+    });
+
+    req.on('error', (error) => {
+      reject(error);
+    });
+  });
+}
+
+module.exports = { parseJsonBody, parseRawBody };

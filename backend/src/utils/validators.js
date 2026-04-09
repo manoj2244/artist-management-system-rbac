@@ -32,6 +32,17 @@ function isValidPhone(value) {
   return digits.length >= 7 && digits.length <= 15;
 }
 
+function isValidYear(value) {
+  const year = parseInt(value, 10);
+  const currentYear = new Date().getFullYear();
+  return Number.isInteger(year) && year >= 1900 && year <= currentYear + 1;
+}
+
+function isNonNegativeInteger(value) {
+  const num = parseInt(value, 10);
+  return Number.isInteger(num) && num >= 0;
+}
+
 function isValidGender(value) {
   return value === 'm' || value === 'f' || value === 'o';
 }
@@ -46,6 +57,8 @@ module.exports = {
   isValidDate,
   isPastDate,
   isValidPhone,
+  isValidYear,
+  isNonNegativeInteger,
   isValidGender,
   isValidRole
 };
