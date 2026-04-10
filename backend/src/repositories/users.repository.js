@@ -2,9 +2,11 @@ const { query } = require('../db/pool');
 
 async function findAllUsers(limit, offset) {
   const result = await query(
-    `SELECT id, first_name, last_name, email, phone, dob, gender, address, role, created_at, updated_at
-     FROM users
-     ORDER BY created_at DESC
+    `SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.dob, u.gender, u.address, u.role,
+            u.created_at, u.updated_at, aul.artist_id
+     FROM users u
+     LEFT JOIN artist_user_links aul ON aul.user_id = u.id
+     ORDER BY u.created_at DESC
      LIMIT $1 OFFSET $2`,
     [limit, offset]
   );
@@ -18,9 +20,11 @@ async function countAllUsers() {
 
 async function findUserById(id) {
   const result = await query(
-    `SELECT id, first_name, last_name, email, phone, dob, gender, address, role, created_at, updated_at
-     FROM users
-     WHERE id = $1`,
+    `SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.dob, u.gender, u.address, u.role,
+            u.created_at, u.updated_at, aul.artist_id
+     FROM users u
+     LEFT JOIN artist_user_links aul ON aul.user_id = u.id
+     WHERE u.id = $1`,
     [id]
   );
   return result.rows[0] || null;
@@ -91,6 +95,36 @@ async function deleteUser(id) {
   return result.rows[0] || null;
 }
 
+async function findArtistLinkByUserId(userId) {
+  const result = await query(
+    `SELECT id, artist_id FROM artist_user_links WHERE user_id = $1`,
+    [userId]
+  );
+  return result.rows[0] || null;
+}
+
+async function findArtistLinkByArtistId(artistId) {
+  const result = await query(
+    `SELECT id, user_id FROM artist_user_links WHERE artist_id = $1`,
+    [artistId]
+  );
+  return result.rows[0] || null;
+}
+
+async function createArtistUserLink(userId, artistId) {
+  await query(
+    `INSERT INTO artist_user_links (user_id, artist_id) VALUES ($1, $2)`,
+    [userId, artistId]
+  );
+}
+
+async function deleteArtistUserLinkByUserId(userId) {
+  await query(
+    `DELETE FROM artist_user_links WHERE user_id = $1`,
+    [userId]
+  );
+}
+
 module.exports = {
   findAllUsers,
   countAllUsers,
@@ -98,5 +132,9 @@ module.exports = {
   findUserByEmail,
   createUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  findArtistLinkByUserId,
+  findArtistLinkByArtistId,
+  createArtistUserLink,
+  deleteArtistUserLinkByUserId
 };

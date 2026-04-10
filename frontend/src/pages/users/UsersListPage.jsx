@@ -61,6 +61,7 @@ function UsersListPage() {
                   <th>Email</th>
                   <th>Phone</th>
                   <th>Role</th>
+                  <th>Artist Profile</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -71,6 +72,7 @@ function UsersListPage() {
                     <td>{user.email}</td>
                     <td>{user.phone}</td>
                     <td>{user.role}</td>
+                    <td>{user.artist_id ? `Artist #${user.artist_id}` : '—'}</td>
                     <td>
                       <div className="table-actions">
                         <button onClick={() => navigate(`/users/${user.id}/edit`)}>Edit</button>

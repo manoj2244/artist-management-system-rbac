@@ -80,7 +80,7 @@ const router = createBrowserRouter([
       {
         path: 'artists',
         element: (
-          <RoleGuard allowedRoles={['super_admin', 'artist_manager', 'artist']}>
+          <RoleGuard allowedRoles={['super_admin', 'artist_manager']}>
             <ArtistsListPage />
           </RoleGuard>
         )

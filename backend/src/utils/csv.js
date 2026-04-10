@@ -14,6 +14,33 @@ function formatCSV(headers, rows) {
   return [headerLine, ...dataLines].join('\n');
 }
 
+function parseCSVLine(line) {
+  const fields = [];
+  let current = '';
+  let insideQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+
+    if (char === '"') {
+      if (insideQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        insideQuotes = !insideQuotes;
+      }
+    } else if (char === ',' && !insideQuotes) {
+      fields.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+
+  fields.push(current.trim());
+  return fields;
+}
+
 function parseCSV(text) {
   const lines = text.split('\n').map((line) => line.trimEnd());
   const nonEmptyLines = lines.filter((line) => line.length > 0);
@@ -22,14 +49,14 @@ function parseCSV(text) {
     return { headers: [], rows: [] };
   }
 
-  const headers = nonEmptyLines[0].split(',').map((h) => h.trim());
+  const headers = parseCSVLine(nonEmptyLines[0]).map((h) => h.trim());
   const rows = [];
 
   for (let i = 1; i < nonEmptyLines.length; i++) {
-    const values = nonEmptyLines[i].split(',');
+    const values = parseCSVLine(nonEmptyLines[i]);
     const row = {};
     headers.forEach((header, index) => {
-      row[header] = values[index] !== undefined ? values[index].trim() : '';
+      row[header] = values[index] !== undefined ? values[index] : '';
     });
     rows.push(row);
   }

@@ -5,8 +5,15 @@ const { ROLES } = require('../constants/roles');
 
 const readAccess = [requireAuth, requireRole(ROLES.SUPER_ADMIN, ROLES.ARTIST_MANAGER)];
 const managerOnly = [requireAuth, requireRole(ROLES.ARTIST_MANAGER)];
+const superAdminOnly = [requireAuth, requireRole(ROLES.SUPER_ADMIN)];
 
 const artistsRoutes = [
+  {
+    method: 'GET',
+    path: '/api/artists/dropdown',
+    middlewares: superAdminOnly,
+    handler: artistsController.getArtistsForDropdown
+  },
   {
     method: 'GET',
     path: '/api/artists/export.csv',

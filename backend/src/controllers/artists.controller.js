@@ -4,6 +4,11 @@ const { AppError } = require('../utils/errors');
 const { parsePagination } = require('../utils/pagination');
 const artistsService = require('../services/artists.service');
 
+async function getArtistsForDropdown(_req, res) {
+  const artists = await artistsService.getArtistsForDropdown();
+  sendJson(res, 200, { artists });
+}
+
 async function listArtists(req, res, ctx) {
   const { page, limit, offset } = parsePagination(ctx.query);
   const result = await artistsService.listArtists(page, limit, offset);
@@ -77,6 +82,7 @@ async function importArtists(req, res) {
 }
 
 module.exports = {
+  getArtistsForDropdown,
   listArtists,
   getArtist,
   createArtist,

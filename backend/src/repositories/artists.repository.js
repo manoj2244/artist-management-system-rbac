@@ -26,6 +26,17 @@ async function findArtistById(id) {
   return result.rows[0] || null;
 }
 
+async function findAllArtistsForDropdown() {
+  const result = await query(
+    `SELECT a.id, a.name
+     FROM artists a
+     LEFT JOIN artist_user_links aul ON aul.artist_id = a.id
+     WHERE aul.artist_id IS NULL
+     ORDER BY a.name ASC`
+  );
+  return result.rows;
+}
+
 async function findAllArtistsForExport() {
   const result = await query(
     `SELECT name, TO_CHAR(dob, 'YYYY-MM-DD') AS dob, gender, address, first_release_year, no_of_albums_released
@@ -89,6 +100,7 @@ module.exports = {
   findAllArtists,
   countAllArtists,
   findArtistById,
+  findAllArtistsForDropdown,
   findAllArtistsForExport,
   createArtist,
   updateArtist,

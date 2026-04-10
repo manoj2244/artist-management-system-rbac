@@ -3,7 +3,7 @@ import useAuthStore from '../../store/auth.store';
 import { logout } from '../../api/auth.api';
 
 function Navbar() {
-  const { user, role, clearAuth } = useAuthStore();
+  const { user, role, artistId, clearAuth } = useAuthStore();
   const navigate = useNavigate();
 
   async function handleLogout() {
@@ -22,6 +22,9 @@ function Navbar() {
         <Link to="/dashboard">Dashboard</Link>
         {(role === 'super_admin' || role === 'artist_manager') && (
           <Link to="/artists">Artists</Link>
+        )}
+        {role === 'artist' && (
+          <Link to={`/artists/${artistId}/songs`}>My Songs</Link>
         )}
         {role === 'super_admin' && (
           <Link to="/users">Users</Link>

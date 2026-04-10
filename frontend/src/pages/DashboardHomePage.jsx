@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import useAuthStore from '../store/auth.store';
 
 function DashboardHomePage() {
-  const { user, role } = useAuthStore();
+  const { user, role, artistId } = useAuthStore();
 
   return (
     <div className="page">
@@ -21,11 +21,14 @@ function DashboardHomePage() {
             <p>Manage artists and their songs</p>
           </Link>
         )}
-        {role === 'artist' && (
-          <Link to="/artists" className="dashboard-card">
+        {role === 'artist' && artistId && (
+          <Link to={`/artists/${artistId}/songs`} className="dashboard-card">
             <h3>My Songs</h3>
             <p>Manage your song collection</p>
           </Link>
+        )}
+        {role === 'artist' && !artistId && (
+          <p className="error-text">Your account is not linked to an artist profile yet. Contact admin.</p>
         )}
       </div>
     </div>

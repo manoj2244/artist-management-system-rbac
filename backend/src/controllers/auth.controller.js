@@ -63,6 +63,7 @@ async function login(req, res) {
   }
 
   const { token, user } = await authService.loginUser(body.email, body.password);
+  const fullUser = await authService.getCurrentUser(user.id);
 
   res.setHeader(
     'Set-Cookie',
@@ -77,13 +78,7 @@ async function login(req, res) {
 
   sendJson(res, 200, {
     message: 'Login successful',
-    user: {
-      id: user.id,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      email: user.email,
-      role: user.role
-    }
+    user: fullUser
   });
 }
 

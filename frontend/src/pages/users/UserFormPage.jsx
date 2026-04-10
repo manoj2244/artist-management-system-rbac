@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getUser, createUser, updateUser } from '../../api/users.api';
+import { getArtistsForDropdown } from '../../api/artists.api';
 
 const EMPTY_FORM = {
   first_name: '',
@@ -11,7 +12,8 @@ const EMPTY_FORM = {
   dob: '',
   gender: '',
   address: '',
-  role: ''
+  role: '',
+  artist_id: ''
 };
 
 function UserFormPage() {
@@ -19,10 +21,17 @@ function UserFormPage() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
+  const [unlinkedArtists, setUnlinkedArtists] = useState([]);
 
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = Boolean(id);
+
+  useEffect(() => {
+    getArtistsForDropdown()
+      .then((data) => setUnlinkedArtists(data.artists))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!isEdit) return;
@@ -39,7 +48,8 @@ function UserFormPage() {
           dob: u.dob ? u.dob.slice(0, 10) : '',
           gender: u.gender,
           address: u.address,
-          role: u.role
+          role: u.role,
+          artist_id: u.artist_id ? String(u.artist_id) : ''
         });
       })
       .catch((err) => alert(err.message))
@@ -47,8 +57,13 @@ function UserFormPage() {
   }, [id, isEdit]);
 
   function handleChange(e) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    setErrors((prev) => ({ ...prev, [e.target.name]: '' }));
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name === 'role' && value !== 'artist' ? { artist_id: '' } : {})
+    }));
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   }
 
   async function handleSubmit(e) {
@@ -59,6 +74,8 @@ function UserFormPage() {
     try {
       const payload = { ...form };
       if (isEdit && !payload.password) delete payload.password;
+      if (payload.role !== 'artist') delete payload.artist_id;
+      if (payload.artist_id) payload.artist_id = parseInt(payload.artist_id, 10);
 
       if (isEdit) {
         await updateUser(id, payload);
@@ -78,6 +95,13 @@ function UserFormPage() {
   }
 
   if (fetching) return <p className="loading">Loading...</p>;
+
+  const artistOptionsForEdit = form.artist_id
+    ? [
+        ...unlinkedArtists,
+        { id: form.artist_id, name: '(current linked artist)' }
+      ]
+    : unlinkedArtists;
 
   return (
     <div className="page">
@@ -151,6 +175,22 @@ function UserFormPage() {
           </select>
           {errors.role && <span className="field-error">{errors.role}</span>}
         </div>
+
+        {form.role === 'artist' && (
+          <div className="form-group">
+            <label>Link to Artist Profile</label>
+            <select name="artist_id" value={form.artist_id} onChange={handleChange}>
+              <option value="">Select artist profile</option>
+              {artistOptionsForEdit.map((a) => (
+                <option key={a.id} value={a.id}>{a.name}</option>
+              ))}
+            </select>
+            {errors.artist_id && <span className="field-error">{errors.artist_id}</span>}
+            {unlinkedArtists.length === 0 && !form.artist_id && (
+              <span className="field-error">No unlinked artist profiles available. Create an artist profile first.</span>
+            )}
+          </div>
+        )}
 
         {errors.general && <p className="error-text">{errors.general}</p>}
 

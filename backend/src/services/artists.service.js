@@ -28,6 +28,10 @@ function validateArtistData(data) {
   return Object.keys(errors).length > 0 ? errors : null;
 }
 
+async function getArtistsForDropdown() {
+  return artistsRepository.findAllArtistsForDropdown();
+}
+
 async function listArtists(page, limit, offset) {
   const [artists, total] = await Promise.all([
     artistsRepository.findAllArtists(limit, offset),
@@ -142,6 +146,7 @@ async function importArtistsCSV(csvText) {
 }
 
 module.exports = {
+  getArtistsForDropdown,
   listArtists,
   getArtistById,
   createArtist,

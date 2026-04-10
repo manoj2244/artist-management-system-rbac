@@ -12,9 +12,11 @@ async function findUserByEmail(email) {
 
 async function findUserById(id) {
   const result = await query(
-    `SELECT id, first_name, last_name, email, phone, dob, gender, address, role, created_at, updated_at
-     FROM users
-     WHERE id = $1`,
+    `SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.dob, u.gender, u.address, u.role,
+            u.created_at, u.updated_at, aul.artist_id
+     FROM users u
+     LEFT JOIN artist_user_links aul ON aul.user_id = u.id
+     WHERE u.id = $1`,
     [id]
   );
   return result.rows[0] || null;
